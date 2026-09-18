@@ -1,0 +1,12 @@
+{
+  "name": "art-angel",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Art Angel — hand-drawn angel number oracle art and caption studio by Brendon Pirzenthal",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node scripts/build.mjs",
+    "preview": "node server.js"
+  }
+}
