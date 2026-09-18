@@ -1,0 +1,853 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Art Angel — by Brendon Pirzenthal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   - Base: Deep space black #0A0A12
+   - Surface: Dark violet-tinted panels #11112A
+   - Accent 1: Electric violet #8B5CF6
+   - Accent 2: Celestial green #39FF14 (the art's green)
+   - Accent 3: Mystic magenta #D946EF
+   - Text: Pale lunar white #EDE9FE
+   - Muted: Stardust grey #7C7CA8
+   Font: Cinzel Decorative (display / sacred numerals) + DM Sans (body)
+============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0A0A12;
+  --surface:  #11112A;
+  --surface2: #1A1A3A;
+  --v:        #8B5CF6;
+  --g:        #39FF14;
+  --m:        #D946EF;
+  --text:     #EDE9FE;
+  --muted:    #7C7CA8;
+  --border:   rgba(139,92,246,0.25);
+  --glow-v:   0 0 24px rgba(139,92,246,0.45);
+  --glow-g:   0 0 24px rgba(57,255,20,0.35);
+  --glow-m:   0 0 24px rgba(217,70,239,0.45);
+  --r:        12px;
+  --r-sm:     8px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* ── STARFIELD ── */
+#starfield {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--d, 3s) ease-in-out infinite var(--del, 0s);
+  opacity: 0;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0; transform: scale(0.5); }
+  50%      { opacity: 0.8; transform: scale(1.2); }
+}
+
+/* ── LAYOUT ── */
+.app { position: relative; z-index: 1; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 28px;
+  background: rgba(10,10,18,0.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: 0.05em;
+}
+.nav-logo span { color: var(--v); }
+.nav-links { display: flex; gap: 8px; }
+.nav-links button {
+  background: none; border: none;
+  color: var(--muted); font-family: 'DM Sans', sans-serif;
+  font-size: 14px; cursor: pointer; padding: 6px 14px;
+  border-radius: 20px; transition: all 0.2s;
+}
+.nav-links button:hover,
+.nav-links button.active {
+  color: var(--text); background: var(--surface2);
+}
+.nav-links button.active { color: var(--v); }
+
+/* ── VIEWS ── */
+.view { display: none; padding-top: 80px; min-height: 100vh; }
+.view.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  min-height: calc(100vh - 64px);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 48px 24px 80px;
+  position: relative;
+}
+.hero-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(80px, 18vw, 180px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--g) 0%, var(--v) 50%, var(--m) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 40px rgba(139,92,246,0.6));
+  animation: pulse-glow 4s ease-in-out infinite;
+  cursor: pointer;
+  user-select: none;
+}
+@keyframes pulse-glow {
+  0%,100% { filter: drop-shadow(0 0 30px rgba(139,92,246,0.5)) drop-shadow(0 0 60px rgba(57,255,20,0.2)); }
+  50%      { filter: drop-shadow(0 0 60px rgba(217,70,239,0.7)) drop-shadow(0 0 100px rgba(57,255,20,0.3)); }
+}
+.hero-subtitle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(13px, 2vw, 16px);
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 16px 0 8px;
+}
+.hero-message {
+  font-size: clamp(20px, 4vw, 32px);
+  font-weight: 300;
+  color: var(--text);
+  max-width: 540px;
+  margin: 0 auto 40px;
+  line-height: 1.4;
+}
+.hero-message em { color: var(--v); font-style: normal; }
+
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 500;
+  cursor: pointer; border: none;
+  transition: all 0.25s; text-decoration: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--v), var(--m));
+  color: #fff;
+  box-shadow: var(--glow-v);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(139,92,246,0.7); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-ghost:hover { border-color: var(--v); color: var(--v); }
+
+/* ── DAILY NUMBER ── */
+.daily-strip {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px;
+  display: flex; align-items: center; gap: 20px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.daily-strip::-webkit-scrollbar { display: none; }
+.daily-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--muted);
+  white-space: nowrap;
+}
+.number-pill {
+  flex-shrink: 0;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text);
+  background: var(--surface2);
+}
+.number-pill:hover { border-color: var(--v); color: var(--v); box-shadow: var(--glow-v); }
+.number-pill.active {
+  background: linear-gradient(135deg, var(--v), var(--m));
+  border-color: transparent; color: #fff;
+  box-shadow: var(--glow-v);
+}
+
+/* ── CONTENT SECTION ── */
+.section { padding: 60px 24px; max-width: 1100px; margin: 0 auto; }
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(22px, 4vw, 34px);
+  margin-bottom: 40px;
+  color: var(--text);
+}
+.section-title span { color: var(--v); }
+
+/* ── NUMBER CARDS ── */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+.number-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.number-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(217,70,239,0.04));
+  opacity: 0; transition: opacity 0.25s;
+}
+.number-card:hover { transform: translateY(-4px); border-color: var(--v); box-shadow: var(--glow-v); }
+.number-card:hover::before { opacity: 1; }
+.card-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 42px; font-weight: 700;
+  background: linear-gradient(135deg, var(--g), var(--v));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+.card-theme {
+  font-size: 13px; font-weight: 500; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--m); margin-bottom: 8px;
+}
+.card-meaning { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* ── MODAL (number detail) ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(10,10,18,0.92);
+  backdrop-filter: blur(12px);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 520px; width: 100%;
+  position: relative;
+  box-shadow: var(--glow-v);
+  animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.85) translateY(30px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; color: var(--muted);
+  font-size: 24px; cursor: pointer; line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: var(--text); }
+.modal-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 72px; font-weight: 700;
+  background: linear-gradient(135deg, var(--g) 0%, var(--v) 50%, var(--m) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(57,255,20,0.4));
+  text-align: center; margin-bottom: 4px;
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+.modal-theme {
+  text-align: center; color: var(--m);
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.modal-body {
+  font-size: 16px; font-weight: 300; color: var(--text);
+  line-height: 1.75; margin-bottom: 28px;
+}
+.modal-affirmation {
+  background: var(--surface2);
+  border-left: 3px solid var(--v);
+  padding: 16px 20px;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  font-style: italic;
+  font-size: 15px; color: var(--muted);
+  margin-bottom: 28px;
+}
+.modal-affirmation strong { color: var(--v); font-style: normal; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.pillar-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+}
+.pillar-icon { font-size: 32px; margin-bottom: 12px; }
+.pillar-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 16px; color: var(--v); margin-bottom: 8px;
+}
+.pillar-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.pillar-tag {
+  display: inline-block;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 4px 12px;
+  border-radius: 20px; border: 1px solid;
+}
+.pillar-tag.weekly { border-color: var(--v); color: var(--v); }
+.pillar-tag.daily  { border-color: var(--g); color: var(--g); }
+.pillar-tag.monthly{ border-color: var(--m); color: var(--m); }
+
+/* ── POST CAPTION GENERATOR ── */
+.generator-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 32px;
+  max-width: 680px;
+}
+.gen-row { margin-bottom: 20px; }
+label {
+  display: block; font-size: 12px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 8px;
+}
+select, textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; padding: 12px 16px;
+  outline: none; transition: border-color 0.2s;
+  resize: vertical;
+}
+select:focus, textarea:focus { border-color: var(--v); }
+select option { background: var(--surface2); }
+
+.output-box {
+  background: var(--surface2);
+  border: 1px solid var(--v);
+  border-radius: var(--r-sm);
+  padding: 20px;
+  font-size: 15px; line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+  min-height: 120px;
+  margin-top: 20px;
+  display: none;
+}
+.output-box.visible { display: block; }
+
+/* ── AUDIO GUIDE ── */
+.audio-lanes { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 600px) { .audio-lanes { grid-template-columns: 1fr; } }
+.lane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px 24px;
+}
+.lane-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; margin-bottom: 16px;
+}
+.lane-label.growth { color: var(--g); border-bottom: 1px solid rgba(57,255,20,0.2); padding-bottom: 10px; }
+.lane-label.brand  { color: var(--v); border-bottom: 1px solid rgba(139,92,246,0.2); padding-bottom: 10px; }
+.lane h3 { font-size: 19px; font-weight: 400; margin-bottom: 10px; }
+.lane p  { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+.lane ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.lane ul li {
+  font-size: 14px; color: var(--text);
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-radius: var(--r-sm);
+  border-left: 2px solid;
+}
+.lane.growth-lane ul li { border-color: var(--g); }
+.lane.brand-lane  ul li { border-color: var(--v); }
+
+/* ── CHECKLIST ── */
+.checklist { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.check-item:hover { border-color: var(--v); }
+.check-item.done { opacity: 0.5; border-color: var(--g); }
+.check-box {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 2px solid var(--muted); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; margin-top: 2px;
+}
+.check-item.done .check-box {
+  background: var(--g); border-color: var(--g); color: #000;
+}
+.check-item.done .check-box::after { content: '✓'; font-size: 13px; font-weight: 700; }
+.check-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+.check-text s { color: var(--muted); }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+footer .footer-brand {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  background: linear-gradient(135deg, var(--g), var(--v), var(--m));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--surface);
+  border: 1px solid var(--v);
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 14px; color: var(--text);
+  z-index: 300;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: var(--glow-v);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .nav-links button { font-size: 12px; padding: 6px 10px; }
+  .nav-logo { font-size: 15px; }
+  .modal { padding: 28px 20px; }
+  .modal-number { font-size: 54px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- STARFIELD -->
+<div id="starfield"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    <div class="modal-number" id="modalNumber">1111</div>
+    <div class="modal-theme" id="modalTheme">Divine Timing · Alignment</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-affirmation" id="modalAffirmation"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="copyCaption()">Copy caption</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Art<span>Angel</span></div>
+  <div class="nav-links">
+    <button class="active" onclick="switchView('home', this)">Home</button>
+    <button onclick="switchView('numbers', this)">Numbers</button>
+    <button onclick="switchView('captions', this)">Captions</button>
+  </div>
+</nav>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- ════════════════════════════════
+       VIEW: HOME
+  ════════════════════════════════ -->
+  <div class="view active" id="view-home">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-number" id="heroNumber" onclick="cycleHeroNumber()">1111</div>
+      <div class="hero-subtitle">Hand-drawn oracle art · divine timing</div>
+      <p class="hero-message">You didn't land here by accident.<br><em>Your number is speaking.</em></p>
+      <div class="cta-row">
+        <button class="btn btn-primary" onclick="switchView('numbers', document.querySelectorAll('.nav-links button')[1])">
+          Find your number
+        </button>
+        <button class="btn btn-ghost" onclick="switchView('captions', document.querySelectorAll('.nav-links button')[2])">
+          Generate a caption
+        </button>
+      </div>
+    </section>
+
+    <!-- DAILY STRIP -->
+    <div class="daily-strip" id="dailyStrip"></div>
+
+  </div>
+
+  <!-- ════════════════════════════════
+       VIEW: NUMBERS
+  ════════════════════════════════ -->
+  <div class="view" id="view-numbers">
+    <div class="section">
+      <div class="section-title">Angel <span>Numbers</span></div>
+      <div class="numbers-grid" id="numbersGrid"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       VIEW: CAPTION GENERATOR
+  ════════════════════════════════ -->
+  <div class="view" id="view-captions">
+    <div class="section">
+      <div class="section-title">Caption <span>Generator</span></div>
+      <div class="generator-box">
+        <div class="gen-row">
+          <label>Select angel number</label>
+          <select id="genNumber">
+            <option value="1111">1111 — Divine Timing</option>
+            <option value="222">222 — Trust &amp; Balance</option>
+            <option value="333">333 — Creative Expansion</option>
+            <option value="444">444 — Protection &amp; Stability</option>
+            <option value="555">555 — Change is Coming</option>
+            <option value="777">777 — Spiritual Awakening</option>
+            <option value="888">888 — Abundance Unlocked</option>
+            <option value="000">000 — Infinite Potential</option>
+            <option value="1010">1010 — New Cycle</option>
+            <option value="1234">1234 — Step by Step</option>
+          </select>
+        </div>
+        <div class="gen-row">
+          <label>Content type</label>
+          <select id="genType">
+            <option value="reel">Number Drop Reel</option>
+            <option value="process">Behind the Brush</option>
+            <option value="carousel">Meaning Deep-Dive Carousel</option>
+            <option value="story">Story / Poll</option>
+          </select>
+        </div>
+        <div class="gen-row">
+          <label>Mood / energy</label>
+          <select id="genMood">
+            <option value="calm">Calm &amp; peaceful</option>
+            <option value="abundant">Abundant &amp; prosperous</option>
+            <option value="mystical">Mystical &amp; deep</option>
+            <option value="urgent">Urgent — action now</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="generateCaption()" style="width:100%;justify-content:center">
+          Generate caption
+        </button>
+        <div class="output-box" id="captionOutput"></div>
+        <button class="btn btn-ghost" id="copyGenBtn" onclick="copyGenCaption()" style="width:100%;justify-content:center;margin-top:12px;display:none">
+          Copy to clipboard
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <footer>
+    <div class="footer-brand">Art Angel</div>
+    <div>Hand-drawn oracle art · @artangel · by Brendon Pirzenthal</div>
+  </footer>
+
+</div><!-- /.app -->
+
+
+<script>
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+const NUMBERS = [
+  { n: '1111', theme: 'Divine Timing · Alignment',
+    meaning: 'You are in perfect alignment with the universe. A doorway is opening — your thoughts are manifesting faster than ever right now. Stay conscious of what you\'re inviting in.',
+    affirmation: '"I am aligned with the flow of the universe. My thoughts create my reality. I trust the timing of my life."',
+    caption: '✨ 1111 ✨\n\nYou keep seeing this number for a reason.\n\nThis is your signal — the universe is listening right now. Your intentions are amplified. Plant seeds with care.\n\n🌌 Save this for the next time 1111 finds you.\n\n#angelNumbers #1111 #divineTiming #manifestation #artangel #numerology #spiritualart #handdrawn' },
+  { n: '222', theme: 'Trust · Balance · Partnership',
+    meaning: 'A period of balance and cooperation is unfolding. Trust the process — the seeds you\'ve planted are growing beneath the surface, even when you can\'t see it yet.',
+    affirmation: '"I trust the process. What I\'ve planted is growing. Balance is flowing into every area of my life."',
+    caption: '✌️ 222 ✌️\n\nPatience isn\'t passive — it\'s trust in motion.\n\n222 appears when what you\'ve started is already working, even when it doesn\'t look like it yet. Stay balanced. Stay open.\n\n🌿 Save this for the moments doubt creeps in.\n\n#222 #angelNumbers #trust #balance #numerology #artangel #spiritualart #manifestation' },
+  { n: '333', theme: 'Creative Expansion · Expression',
+    meaning: 'Your creative energy is at a peak. This is the number of artists, visionaries and truth-tellers. What you create right now carries an unusual charge — use it.',
+    affirmation: '"My creativity is a gift. I express myself freely and authentically. My voice matters in this world."',
+    caption: '🎨 333 🎨\n\nYour creative energy right now is not an accident.\n\n333 is the number of artists, visionaries, and people who speak truth through what they make. If you\'ve been holding back — this is your signal.\n\n🖌️ Tag someone who needs to hear this today.\n\n#333 #angelNumbers #creativity #artistlife #artangel #numerology #divinetiming #handdrawn' },
+  { n: '444', theme: 'Protection · Stability · Foundation',
+    meaning: 'You are protected. Your foundation is solid, even when things feel uncertain. The energy around you right now is one of grounded stability — you are not alone.',
+    affirmation: '"I am safe, grounded, and protected. My foundation is strong. I build with patience and intention."',
+    caption: '🛡️ 444 🛡️\n\nYou are more protected than you realise.\n\n444 shows up when the universe is telling you: your foundation is solid. Don\'t panic. Don\'t rush. You are held.\n\n🌿 Save this for the next time you need to feel safe.\n\n#444 #angelNumbers #protection #grounded #artangel #numerology #spiritualart #youareprotected' },
+  { n: '555', theme: 'Transformation · Change is Coming',
+    meaning: 'A major shift is arriving. 555 doesn\'t ask if you\'re ready — it tells you change is already in motion. Lean into it rather than resist. The other side of this transition is where you\'re meant to be.',
+    affirmation: '"I embrace change as growth. I release what no longer serves me. I move forward with courage and trust."',
+    caption: '🔄 555 🔄\n\nSomething is shifting — and it\'s for you, not against you.\n\n555 is the universe rearranging things on your behalf. Even if it feels chaotic right now, trust that the destination is worth the turbulence.\n\n⚡ Comment your number below — I want to know what\'s shifting for you.\n\n#555 #angelNumbers #change #transformation #artangel #numerology #growth #trust' },
+  { n: '777', theme: 'Spiritual Awakening · Inner Wisdom',
+    meaning: 'You\'re deepening into your own spiritual truth. 777 is rare — it appears when someone is genuinely awakening, not just seeking. Your intuition is more accurate than you\'re giving it credit for.',
+    affirmation: '"I trust my inner wisdom. I am spiritually guided and awakened. My intuition leads me to truth."',
+    caption: '🔮 777 🔮\n\nYour intuition has been right about this.\n\n777 is not a coincidence — it\'s confirmation. You\'re not going crazy. You\'re waking up. And what you\'ve been sensing is real.\n\n✨ Save this. You\'ll know why later.\n\n#777 #angelNumbers #spiritualAwakening #intuition #artangel #numerology #handdrawn #divineGuidance' },
+  { n: '888', theme: 'Abundance · Flow · Infinite Return',
+    meaning: 'The energy of infinite return. What you\'ve given — energy, work, love, time — is about to come back multiplied. A financial or material shift is in motion. Receive it without guilt.',
+    affirmation: '"Abundance flows to me freely and easily. I am open to receiving in all forms. I deserve prosperity."',
+    caption: '∞ 888 ∞\n\nAbundance is not coming — it\'s already en route.\n\n888 is the number of infinite cycles. Energy in motion. What you\'ve put out is returning to you, amplified. Make room to receive it.\n\n💚 Save this when you need to remember you\'re in the flow.\n\n#888 #angelNumbers #abundance #prosperity #artangel #numerology #manifestation #infiniteReturn' },
+  { n: '000', theme: 'Infinite Potential · Fresh Start',
+    meaning: '000 is pure potential — the void before creation. You are standing at a point of absolute fresh beginning. Nothing from the old cycle is required to come with you. Start clean.',
+    affirmation: '"I stand at the beginning of infinite possibilities. I release the old and embrace the new. I am limitless."',
+    caption: '⭕ 000 ⭕\n\nThe most powerful number is the one most people overlook.\n\n000 is pure potential. The universe resetting. A clean slate that most people are too scared to step onto.\n\nYou\'re not most people.\n\n🌌 Drop a 0 in the comments if you\'re ready.\n\n#000 #angelNumbers #newBeginnings #freshStart #artangel #numerology #infinite #potential' },
+  { n: '1010', theme: 'New Cycle · Personal Growth',
+    meaning: 'A significant new chapter is beginning — and this one is different. 1010 combines the energy of new beginnings (1) with infinite potential (0), twice over. You\'re not starting over. You\'re starting better.',
+    affirmation: '"I am stepping into a powerful new cycle. My growth is accelerating. I am exactly where I need to be."',
+    caption: '🔟 1010 🔟\n\nYou\'re not starting over. You\'re starting better.\n\n1010 is a new cycle combined with infinite potential, back to back. Everything you\'ve learned up to this point is fuel for what\'s next.\n\n🚀 Tag someone who is stepping into something new right now.\n\n#1010 #angelNumbers #newCycle #growth #artangel #numerology #beginnings #spiritualGrowth' },
+  { n: '1234', theme: 'Step by Step · Progress',
+    meaning: 'Everything is unfolding in the right sequence. You\'re not behind — you\'re on a deliberate staircase. Each step is necessary. 1234 is the reminder that linear progress IS spiritual progress.',
+    affirmation: '"Each step I take is the right step. I trust the process. My progress is exactly on time."',
+    caption: '🪜 1234 🪜\n\nYou\'re not behind. You\'re exactly on the staircase.\n\n1234 is the most grounded angel number — it\'s the universe saying your progress is real, even when it\'s slow. One step. Then the next.\n\n💫 Save this for the moments you feel like you\'re not moving fast enough.\n\n#1234 #angelNumbers #progress #stepByStep #artangel #numerology #trust #divineTiming' }
+];
+
+const heroNumbers = ['1111','222','333','444','555','777','888','000'];
+let heroIdx = 0;
+
+/* ═══════════════════════════════════
+   STARFIELD
+═══════════════════════════════════ */
+(function() {
+  const sf = document.getElementById('starfield');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --d:${(2+Math.random()*4).toFixed(1)}s;
+      --del:${(Math.random()*5).toFixed(1)}s;
+      width:${Math.random()>0.8?3:2}px;
+      height:${Math.random()>0.8?3:2}px;
+    `;
+    sf.appendChild(s);
+  }
+})();
+
+/* ═══════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════ */
+function switchView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════
+   HERO
+═══════════════════════════════════ */
+function cycleHeroNumber() {
+  heroIdx = (heroIdx + 1) % heroNumbers.length;
+  const el = document.getElementById('heroNumber');
+  el.style.opacity = '0';
+  el.style.transform = 'scale(0.8)';
+  setTimeout(() => {
+    el.textContent = heroNumbers[heroIdx];
+    el.style.transition = 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'scale(1)';
+  }, 200);
+}
+setInterval(cycleHeroNumber, 5000);
+
+/* ═══════════════════════════════════
+   DAILY STRIP
+═══════════════════════════════════ */
+(function buildStrip() {
+  const strip = document.getElementById('dailyStrip');
+  const label = document.createElement('div');
+  label.className = 'daily-label';
+  label.textContent = 'Quick access';
+  strip.appendChild(label);
+  NUMBERS.forEach(d => {
+    const pill = document.createElement('button');
+    pill.className = 'number-pill';
+    pill.textContent = d.n;
+    pill.onclick = () => openModal(d);
+    strip.appendChild(pill);
+  });
+})();
+
+/* ═══════════════════════════════════
+   NUMBERS GRID
+═══════════════════════════════════ */
+(function buildGrid() {
+  const grid = document.getElementById('numbersGrid');
+  NUMBERS.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'number-card';
+    card.innerHTML = `
+      <div class="card-number">${d.n}</div>
+      <div class="card-theme">${d.theme.split(' · ')[0]}</div>
+      <div class="card-meaning">${d.meaning.substring(0, 90)}…</div>
+    `;
+    card.onclick = () => openModal(d);
+    grid.appendChild(card);
+  });
+})();
+
+/* ═══════════════════════════════════
+   MODAL
+═══════════════════════════════════ */
+let currentCaption = '';
+function openModal(d) {
+  currentCaption = d.caption;
+  document.getElementById('modalNumber').textContent = d.n;
+  document.getElementById('modalTheme').textContent = d.theme;
+  document.getElementById('modalBody').textContent = d.meaning;
+  document.getElementById('modalAffirmation').innerHTML =
+    '<strong>Affirmation:</strong> ' + d.affirmation;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+function copyCaption() {
+  navigator.clipboard.writeText(currentCaption).then(() => showToast('Caption copied! ✨'));
+}
+
+/* ═══════════════════════════════════
+   CAPTION GENERATOR
+═══════════════════════════════════ */
+const CAPTIONS = {
+  reel: {
+    calm: n => `🌿 ${n} 🌿\n\nWhen this number finds you, slow down.\n\nYou don't need to chase anything right now. The universe already knows where you're going. Let this be your permission to breathe.\n\n💫 Save this for when the noise gets too loud.\n\n#${n} #angelNumbers #peace #artangel #handdrawn #divineTiming #numerology`,
+    abundant: n => `✨ ${n} ✨\n\nAbundance isn't something you earn — it's something you allow.\n\nThis number is your reminder that the flow is already moving toward you. Open your hands.\n\n🌟 Save this and share it with someone who needs to receive today.\n\n#${n} #angelNumbers #abundance #prosperity #artangel #manifestation #numerology`,
+    mystical: n => `🔮 ${n} 🔮\n\nNot everything has a rational explanation. And that's exactly the point.\n\nThis number chose you today. Listen past the logic.\n\n🌌 Comment your number below — the one you can't stop seeing.\n\n#${n} #angelNumbers #mystical #spiritualArt #artangel #numerology #handdrawn`,
+    urgent: n => `⚡ ${n} ⚡\n\nStop scrolling. This is meant for you right now.\n\n${n} is a direct signal — the universe doesn't repeat itself by accident. What have you been ignoring?\n\n🔥 Tag someone who needs this message today.\n\n#${n} #angelNumbers #divineTiming #artangel #nowIsTheTime #spiritualAwakening`
+  },
+  process: {
+    calm: n => `🖌️ Behind the brush — ${n}\n\nEvery number starts as a blank page and a feeling.\n\nThis one asked to be raw, layered, and alive. Watch how the energy builds as the paint finds its form.\n\n✍️ What do you feel when you watch this number emerge?\n\n#${n} #behindTheBrush #angelNumbers #artistProcess #handdrawn #artangel #originalArt`,
+    abundant: n => `🎨 Making ${n} — the process\n\nI don't plan these pieces. I feel the number first, then let the brush decide.\n\n${n} is the energy of abundance — so I let it sprawl, layer, and overflow.\n\n💚 Save this if you love seeing art being born.\n\n#${n} #artistProcess #handdrawn #artangel #angelNumbers #originalArt #timelapse`,
+    mystical: n => `🌀 This is how ${n} wants to be seen.\n\nI painted this three times before it felt right. Numbers have opinions about how they look.\n\nThis is the one that stayed.\n\n🔮 What do you see in the layers?\n\n#${n} #artistProcess #handdrawn #artangel #angelNumbers #mysticalArt #original`,
+    urgent: n => `🖌️ I painted ${n} at 2am because it wouldn't leave me alone.\n\nSome pieces ask to be made. This was one of them.\n\nWatch until the end — the last layer changes everything.\n\n⚡ Drop a 🔥 if you felt this.\n\n#${n} #behindTheBrush #angelNumbers #artangel #handdrawn #lateNightArt #originalArt`
+  },
+  carousel: {
+    calm: n => `✨ ${n} — a deeper look\n\nSwipe for the full meaning of this number. There's more here than a single Reel can hold.\n\nSave this one — it reads differently every time you come back to it.\n\n🌿 And drop your number in the comments. I'll tell you what it means.\n\n#${n} #angelNumbers #deepDive #numerology #artangel #meanings #spiritualGrowth`,
+    abundant: n => `💰 ${n} explained — the prosperity frequency\n\nSwipe through — this number has layers most people miss.\n\nSave it now. Share it with someone in their glow-up era.\n\n#${n} #angelNumbers #abundance #numerology #artangel #prosperity #spiritualArt`,
+    mystical: n => `🔮 The real meaning of ${n}\n\nMost people only know the surface. Swipe to go deeper.\n\nThis is the number that showed up for a reason — and you're about to understand why.\n\n💫 Save this. You'll come back to it.\n\n#${n} #angelNumbers #numerology #artangel #mystical #deepDive #spiritualMeaning`,
+    urgent: n => `⚡ ${n} — don't scroll past this.\n\nSwipe through now. The third slide is the one you need to see.\n\nSave it before you forget — the universe doesn't repeat messages forever.\n\n#${n} #angelNumbers #numerology #artangel #divineTiming #deepDive #meanings`
+  },
+  story: {
+    calm: n => `📊 STORY POLL COPY:\n\n"${n} has been following me today 🌿\n\nWhich number has been following YOU this week?\n[Poll: 111 / 222 / 333 / 444 / other]\n\nDM me yours and I'll send you its meaning 💫"`,
+    abundant: n => `📊 STORY POLL COPY:\n\n"Saw ${n} THREE times this morning ✨\n\nWhich abundance number have you been seeing?\n[Poll: 888 / 888 / 555 / 1111]\n\nComment below and I'll send the full meaning 💚"`,
+    mystical: n => `📊 STORY PROMPT COPY:\n\n"${n} showed up for me today in the strangest way 🔮\n\nHas a number been following you lately? Sometimes the universe is very direct.\n\nSlide into my DMs — tell me your number and I'll read it for you ✨"`,
+    urgent: n => `📊 STORY PROMPT COPY:\n\n"Stop! Which number have you been seeing non-stop?\n\n[Poll options: 1111 / 444 / 777 / Other]\n\nTag a friend who needs to hear about their number today ⚡"`
+  }
+};
+
+function generateCaption() {
+  const n = document.getElementById('genNumber').value;
+  const type = document.getElementById('genType').value;
+  const mood = document.getElementById('genMood').value;
+  const fn = CAPTIONS[type][mood];
+  const result = fn(n);
+  const box = document.getElementById('captionOutput');
+  box.textContent = result;
+  box.classList.add('visible');
+  document.getElementById('copyGenBtn').style.display = 'flex';
+}
+function copyGenCaption() {
+  const text = document.getElementById('captionOutput').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('Caption copied! ✨'));
+}
+
+/* ═══════════════════════════════════
+   CHECKLIST
+═══════════════════════════════════ */
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  const done = document.querySelectorAll('#launchChecklist .check-item.done').length;
+  const total = document.querySelectorAll('#launchChecklist .check-item').length;
+  if (done === total) showToast('🎉 Launch checklist complete! Art Angel is live-ready.');
+}
+
+/* ═══════════════════════════════════
+   TOAST
+═══════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function copyText(text, el) {
+  navigator.clipboard.writeText(text).then(() => showToast('CTA copied! ✨'));
+}
+</script>
+
+</body>
+</html>
+
+
