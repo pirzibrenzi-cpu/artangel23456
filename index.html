@@ -4,6 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Art Angel — by Brendon Pirzenthal</title>
+<meta name="description" content="Art Angel — hand-drawn angel number oracle art, meanings and caption studio by Brendon Pirzenthal." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext x='16' y='23' font-size='20' text-anchor='middle'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
 
@@ -702,6 +704,7 @@ function switchView(id, btn) {
 function cycleHeroNumber() {
   heroIdx = (heroIdx + 1) % heroNumbers.length;
   const el = document.getElementById('heroNumber');
+  el.style.transition = 'all 0.2s ease-in';
   el.style.opacity = '0';
   el.style.transform = 'scale(0.8)';
   setTimeout(() => {
@@ -711,7 +714,11 @@ function cycleHeroNumber() {
     el.style.transform = 'scale(1)';
   }, 200);
 }
-setInterval(cycleHeroNumber, 5000);
+let heroTimer = setInterval(cycleHeroNumber, 5000);
+document.getElementById('heroNumber').addEventListener('click', () => {
+  clearInterval(heroTimer);
+  heroTimer = setInterval(cycleHeroNumber, 5000);
+});
 
 /* ═══════════════════════════════════
    DAILY STRIP
@@ -770,8 +777,26 @@ function closeModal() {
 document.getElementById('modalOverlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+/* Clipboard with fallback for non-secure (http) preview contexts. */
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } catch (e) {
+    /* no-op — toast below still confirms the attempt */
+  }
+  document.body.removeChild(ta);
+  return Promise.resolve();
+}
 function copyCaption() {
-  navigator.clipboard.writeText(currentCaption).then(() => showToast('Caption copied! ✨'));
+  copyToClipboard(currentCaption).then(() => showToast('Caption copied! ✨'));
 }
 
 /* ═══════════════════════════════════
@@ -817,7 +842,7 @@ function generateCaption() {
 }
 function copyGenCaption() {
   const text = document.getElementById('captionOutput').textContent;
-  navigator.clipboard.writeText(text).then(() => showToast('Caption copied! ✨'));
+  copyToClipboard(text).then(() => showToast('Caption copied! ✨'));
 }
 
 /* ═══════════════════════════════════
@@ -843,7 +868,7 @@ function showToast(msg) {
 }
 
 function copyText(text, el) {
-  navigator.clipboard.writeText(text).then(() => showToast('CTA copied! ✨'));
+  copyToClipboard(text).then(() => showToast('CTA copied! ✨'));
 }
 </script>
 
